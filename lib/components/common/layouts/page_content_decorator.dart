@@ -25,9 +25,7 @@ class PageContentDecorator extends StatelessWidget {
                       minWidth: constraints.maxWidth,
                       minHeight: constraints.maxHeight
                   ),
-                  child: IntrinsicHeight(
-                    child: child,
-                  ),
+                  child: child,
                 ),
               );
             }

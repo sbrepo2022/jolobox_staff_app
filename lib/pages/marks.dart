@@ -1,8 +1,8 @@
 import 'dart:async';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:jolobox_staff_app/models/marks_model.dart';
-import 'package:provider/provider.dart';
 
 import 'package:jolobox_staff_app/models/session_model.dart';
 
@@ -142,13 +142,34 @@ class _MarksPageState extends State<MarksPage> {
           ),
         ),
       ]
-      : [
-
-      ],
-      child: PageLayoutDefault(
+      : [],
+      child: ! sessionModel.isSessionActive ?
+      PageLayoutDefault(
         title: 'Метки',
-        actionButtons: sessionModel.isSessionActive ?
-        [
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                const Spacer(flex: 1),
+                Center(
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: JoloboxTheme.sizes.themeScale(500.0),
+                    ),
+                    width: double.infinity,
+                    child: const SessionEnterSurface(),
+                  ),
+                ),
+                const Spacer(flex: 2),
+              ],
+            ),
+          ),
+        ],
+      )
+      :
+      PageLayoutSliverContainer(
+        title: 'Метки',
+        actionButtons: [
           IconButton(
             color: JoloboxTheme.colors.primary,
             highlightColor: JoloboxTheme.colors.primary.withAlpha(0x30),
@@ -164,11 +185,10 @@ class _MarksPageState extends State<MarksPage> {
             ),
             onPressed: _onShowSessionInfoDialog,
           ),
-        ]
-        : [],
-        children: [
-          sessionModel.isSessionActive ?
-          Center(
+        ],
+        child: Padding(
+          padding: EdgeInsets.all(JoloboxTheme.sizes.smallPadding),
+          child: Center(
             child: SizedBox(
               width: 500,
               child: ContentSurface(
@@ -197,76 +217,77 @@ class _MarksPageState extends State<MarksPage> {
                           }
 
                           return MapEntry(
-                            index,
-                            Column(
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    setCheckbox(! markData.value);
-                                  },
-                                  splashFactory: NoSplash.splashFactory,
-                                  highlightColor: Colors.transparent,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: JoloboxTheme.sizes.smallPadding / 4),
-                                    child: Row(
-                                      children: [
-                                        CustomCheckbox(
-                                          title: markData.name,
-                                          isDefaultChecked: markData.value,
-                                          setDefaultEveryRebuild: true,
-                                          onChanged: setCheckbox,
-                                        ),
-                                        const Spacer(),
-                                        Visibility(
-                                            visible: markData.notListen,
-                                            child: Container(
-                                                padding: EdgeInsets.only(left: JoloboxTheme.sizes.smallPadding / 4),
-                                                child: const Icon(
-                                                  Icons.priority_high_rounded,
-                                                  color: Colors.amber,
-                                                )
-                                            )
-                                        )
-                                      ],
+                              index,
+                              Column(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      setCheckbox(! markData.value);
+                                    },
+                                    splashFactory: NoSplash.splashFactory,
+                                    highlightColor: Colors.transparent,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(vertical: JoloboxTheme.sizes.smallPadding / 4),
+                                      child: Row(
+                                        children: [
+                                          CustomCheckbox(
+                                            title: markData.name,
+                                            isDefaultChecked: markData.value,
+                                            setDefaultEveryRebuild: true,
+                                            onChanged: setCheckbox,
+                                          ),
+                                          const Spacer(),
+                                          Visibility(
+                                              visible: markData.notListen,
+                                              child: Container(
+                                                  padding: EdgeInsets.only(left: JoloboxTheme.sizes.smallPadding / 4),
+                                                  child: const Icon(
+                                                    Icons.priority_high_rounded,
+                                                    color: Colors.amber,
+                                                  )
+                                              )
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
 
-                                Visibility(
-                                  visible: index < elemCount - 1,
-                                  child: const DividerLine()
-                                ),
-                              ],
-                            )
+                                  Visibility(
+                                      visible: index < elemCount - 1,
+                                      child: const DividerLine()
+                                  ),
+                                ],
+                              )
                           );
                         }).values.toList(),
 
                         CustomCollapse(
-                          collapsed: marksNotListen <= 0,
-                          msDuration: 100,
-                          child: Container(
-                            padding: EdgeInsets.only(top: JoloboxTheme.sizes.smallPadding / 2),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.warning_rounded,
-                                  color: Colors.amber,
-                                ),
-                                SizedBox(width: JoloboxTheme.sizes.themeScale(8.0)),
-                                Text(
-                                  'Столов не обслуживается: $marksNotListen',
-                                  style: const TextStyle(
-                                      color: Colors.amber
+                            collapsed: marksNotListen <= 0,
+                            msDuration: 100,
+                            child: Container(
+                              padding: EdgeInsets.only(top: JoloboxTheme.sizes.smallPadding / 2),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.warning_rounded,
+                                    color: Colors.amber,
                                   ),
-                                ),
-                              ],
-                            ),
-                          )
+                                  SizedBox(width: JoloboxTheme.sizes.themeScale(8.0)),
+                                  Text(
+                                    'Столов не обслуживается: $marksNotListen',
+                                    style: const TextStyle(
+                                        color: Colors.amber
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
                         ),
                       ],
                     )
-                    : Center(
+                    :
+                    Center(
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: JoloboxTheme.sizes.bigPadding),
                         child: Text(
@@ -283,26 +304,9 @@ class _MarksPageState extends State<MarksPage> {
                 ),
               ),
             ),
-          )
-          : Expanded(
-            child: Column(
-              children: [
-                const Spacer(flex: 1),
-                Center(
-                  child: Container(
-                    constraints: BoxConstraints(
-                      maxWidth: JoloboxTheme.sizes.themeScale(500.0),
-                    ),
-                    width: double.infinity,
-                    child: const SessionEnterSurface(),
-                  ),
-                ),
-                const Spacer(flex: 2),
-              ],
-            ),
           ),
-        ],
-      )
+        ),
+      ),
     );
   }
 }

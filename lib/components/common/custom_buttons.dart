@@ -111,17 +111,25 @@ class CustomDialogButton extends StatelessWidget {
 
 
 class CustomSaveButton extends StatefulWidget {
-  const CustomSaveButton({Key? key, required this.label, required this.onPressed}) : super(key: key);
+  const CustomSaveButton({
+    Key? key,
+    required this.label,
+    required this.onPressed,
+    this.initiallyActive = false,
+    this.setInitiallyActiveEveryRebuild = false,
+  }) : super(key: key);
 
   final String label;
   final Function() onPressed;
+  final bool initiallyActive;
+  final bool setInitiallyActiveEveryRebuild;
 
   @override
   State<CustomSaveButton> createState() => CustomSaveButtonState();
 }
 
 class CustomSaveButtonState extends State<CustomSaveButton> {
-  bool _active = false;
+  late bool _active;
 
   void pressedAction() {
     if (_active) {
@@ -139,7 +147,17 @@ class CustomSaveButtonState extends State<CustomSaveButton> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _active = widget.initiallyActive;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (widget.setInitiallyActiveEveryRebuild) {
+      _active = widget.initiallyActive;
+    }
+
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(

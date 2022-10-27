@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jolobox_staff_app/components/common/layouts/page_layouts.dart';
 import 'package:provider/provider.dart';
 
 import 'package:jolobox_staff_app/theme/theme_constants.dart';
@@ -36,74 +37,62 @@ class _LoginPageState extends State<LoginPage> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: PageContentDecorator(
-            child: Container(
-              padding: EdgeInsets.only(
-                  right: JoloboxTheme.sizes.smallPadding,
-                  left: JoloboxTheme.sizes.smallPadding,
-                  bottom: JoloboxTheme.sizes.smallPadding,
-                  top: JoloboxTheme.sizes.smallPadding + MediaQuery.of(context).padding.top
-              ),
-              child: SizedBox.expand(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const PageTitle(label: 'Авторизация'),
-                    const Spacer(flex: 2),
-                    SizedBox(height: JoloboxTheme.sizes.bigPadding),
-                    Form(
-                      key: _authFormKey,
-                      child: Center(
-                        child: Container(
-                          constraints: BoxConstraints(
-                            maxWidth: JoloboxTheme.sizes.themeScale(500.0),
-                          ),
-                          width: double.infinity,
-                          child: ContentSurface(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Center(
-                                    child: Text('Не зарегистрированы?')
-                                ),
-                                const Center(
-                                  child: TextLink(label: 'Создать аккаунт', link: 'https://yandex.ru'),
-                                ),
-                                SizedBox(height: JoloboxTheme.sizes.smallPadding),
-                                const CustomTextInput(label: 'Email'),
-                                SizedBox(height: JoloboxTheme.sizes.smallPadding),
-                                const CustomPasswordInput(label: 'Пароль'),
-                                SizedBox(height: JoloboxTheme.sizes.smallPadding / 2),
-                                const Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text('Забыли пароль?')
-                                ),
-                                const Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextLink(label: 'Восстановить', link: 'https://yandex.ru'),
-                                ),
-                                SizedBox(height: JoloboxTheme.sizes.bigPadding),
-                                Center(
-                                  child: CustomPrimaryButton(
-                                    label: 'Вход',
-                                    onPressed: () {
-                                      AuthModel authModel = Provider.of<AuthModel>(context, listen: false);
-                                      authModel.isUserAuth = true;
-                                      Navigator.pushReplacementNamed(context, '/AppPage');
-                                    },
-                                  ),
-                                ),
-                              ],
+            child: PageLayoutDefault(
+              title: 'Авторизация',
+              children: [
+                const Spacer(flex: 1),
+                SizedBox(height: JoloboxTheme.sizes.bigPadding),
+                Form(
+                  key: _authFormKey,
+                  child: Center(
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: JoloboxTheme.sizes.themeScale(500.0),
+                      ),
+                      width: double.infinity,
+                      child: ContentSurface(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Center(
+                                child: Text('Не зарегистрированы?')
                             ),
-                          ),
+                            const Center(
+                              child: TextLink(label: 'Создать аккаунт', link: 'https://yandex.ru'),
+                            ),
+                            SizedBox(height: JoloboxTheme.sizes.smallPadding),
+                            const CustomTextInput(label: 'Email'),
+                            SizedBox(height: JoloboxTheme.sizes.smallPadding),
+                            const CustomPasswordInput(label: 'Пароль'),
+                            SizedBox(height: JoloboxTheme.sizes.smallPadding / 2),
+                            const Align(
+                                alignment: Alignment.centerRight,
+                                child: Text('Забыли пароль?')
+                            ),
+                            const Align(
+                              alignment: Alignment.centerRight,
+                              child: TextLink(label: 'Восстановить', link: 'https://yandex.ru'),
+                            ),
+                            SizedBox(height: JoloboxTheme.sizes.bigPadding),
+                            Center(
+                              child: CustomPrimaryButton(
+                                label: 'Вход',
+                                onPressed: () {
+                                  AuthModel authModel = Provider.of<AuthModel>(context, listen: false);
+                                  authModel.isUserAuth = true;
+                                  Navigator.pushReplacementNamed(context, '/AppPage');
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const Spacer(flex: 3),
-                  ],
+                  ),
                 ),
-              ),
+                const Spacer(flex: 3),
+              ],
             ),
           ),
         ),

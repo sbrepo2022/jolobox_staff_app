@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:provider/provider.dart';
 
 import 'package:jolobox_staff_app/models/orders_model.dart';
 
@@ -9,6 +10,7 @@ import 'package:jolobox_staff_app/components/common/content_surface.dart';
 import 'package:jolobox_staff_app/components/common/divider_line.dart';
 import 'package:jolobox_staff_app/components/common/custom_collapse.dart';
 import 'package:jolobox_staff_app/components/common/custom_inputs.dart';
+import 'package:jolobox_staff_app/components/common/custom_buttons.dart';
 
 class OrderTile extends StatefulWidget {
   const OrderTile({
@@ -54,37 +56,37 @@ class _OrderTileState extends State<OrderTile> {
                       Text(widget.orderData.markName),
                       SizedBox(width: JoloboxTheme.sizes.themeScale(8.0)),
                       Builder(
-                          builder: (context) {
-                            switch (widget.orderData.status) {
-                              case OrderStatus.notViewed:
-                                return Container(
-                                  width: JoloboxTheme.sizes.themeScale(10.0),
-                                  height: JoloboxTheme.sizes.themeScale(10.0),
-                                  margin: EdgeInsets.all(JoloboxTheme.sizes.themeScale(7.0)),
-                                  decoration: BoxDecoration(
-                                    color: JoloboxTheme.colors.primary,
-                                    borderRadius: BorderRadius.circular(JoloboxTheme.sizes.themeScale(10.0)),
-                                  ),
-                                );
+                        builder: (context) {
+                          switch (widget.orderData.status) {
+                            case OrderStatus.notViewed:
+                              return Container(
+                                width: JoloboxTheme.sizes.themeScale(10.0),
+                                height: JoloboxTheme.sizes.themeScale(10.0),
+                                margin: EdgeInsets.all(JoloboxTheme.sizes.themeScale(5.0)),
+                                decoration: BoxDecoration(
+                                  color: JoloboxTheme.colors.primary,
+                                  borderRadius: BorderRadius.circular(JoloboxTheme.sizes.themeScale(10.0)),
+                                ),
+                              );
 
-                              case OrderStatus.viewed:
-                                return Container();
+                            case OrderStatus.viewed:
+                              return Container();
 
-                              case OrderStatus.processing:
-                                return Icon(
-                                    Icons.autorenew_rounded,
-                                    size: JoloboxTheme.sizes.themeScale(18.0),
-                                    color: JoloboxTheme.colors.primary
-                                );
+                            case OrderStatus.processing:
+                              return Icon(
+                                  Icons.autorenew_rounded,
+                                  size: JoloboxTheme.sizes.themeScale(18.0),
+                                  color: JoloboxTheme.colors.primary
+                              );
 
-                              case OrderStatus.finished:
-                                return Icon(
-                                    Icons.done_all_rounded,
-                                    size: JoloboxTheme.sizes.themeScale(18.0),
-                                    color: JoloboxTheme.colors.success
-                                );
-                            }
+                            case OrderStatus.finished:
+                              return Icon(
+                                  Icons.done_all_rounded,
+                                  size: JoloboxTheme.sizes.themeScale(18.0),
+                                  color: JoloboxTheme.colors.success
+                              );
                           }
+                        }
                       ),
                     ],
                   ),
@@ -109,6 +111,12 @@ class _OrderTileState extends State<OrderTile> {
               ExpandButton(
                 onPressed: (opened) {
                   _isOpen.value = opened;
+
+                  OrdersModel ordersModel = Provider.of<OrdersModel>(context, listen: false);
+                  if (widget.orderData.status == OrderStatus.notViewed) {
+                    widget.orderData.status = OrderStatus.viewed;
+                  }
+                  ordersModel.updateOrder(widget.orderData);
                 }
               )
             ],
@@ -216,6 +224,41 @@ class _OrderTileState extends State<OrderTile> {
                     ),
                   );
                 }).values.toList(),
+
+                SizedBox(height: JoloboxTheme.sizes.smallPadding),
+
+                Row(
+                  children: [
+                    const Spacer(),
+                    CustomSaveButton(
+                      label: 'Начать',
+                      initiallyActive: widget.orderData.status == OrderStatus.viewed,
+                      setInitiallyActiveEveryRebuild: true,
+                      onPressed: () {
+                        OrdersModel ordersModel = Provider.of<OrdersModel>(context, listen: false);
+                        widget.orderData.status = OrderStatus.processing;
+                        ordersModel.updateOrder(widget.orderData);
+                      }
+                    ),
+                    SizedBox(width: JoloboxTheme.sizes.smallPadding / 2),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Color(0xFFC4C4C4)
+                    ),
+                    SizedBox(width: JoloboxTheme.sizes.smallPadding / 2),
+                    CustomSaveButton(
+                      label: 'Завершить',
+                      initiallyActive: widget.orderData.status == OrderStatus.processing,
+                      setInitiallyActiveEveryRebuild: true,
+                      onPressed: () {
+                        OrdersModel ordersModel = Provider.of<OrdersModel>(context, listen: false);
+                        widget.orderData.status = OrderStatus.finished;
+                        ordersModel.updateOrder(widget.orderData);
+                      }
+                    ),
+                    const Spacer(),
+                  ],
+                ),
               ],
             ),
           ),

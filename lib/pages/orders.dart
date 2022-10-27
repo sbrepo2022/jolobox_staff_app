@@ -128,77 +128,11 @@ class _OrdersPageState extends State<OrdersPage> {
     SessionModel sessionModel = Provider.of<SessionModel>(context);
 
     return PageContentDecorator(
-      child: PageLayoutDefault(
+      child: ! sessionModel.isSessionActive ?
+      PageLayoutDefault(
         title: 'Заказы',
-        actionButtons: sessionModel.isSessionActive ?
-        [
-          IconButton(
-            color: JoloboxTheme.colors.primary,
-            highlightColor: JoloboxTheme.colors.primary.withAlpha(0x30),
-            splashColor: JoloboxTheme.colors.primary.withAlpha(0x30),
-            splashRadius: JoloboxTheme.sizes.themeScale(32.0),
-            iconSize: 32.0,
-            visualDensity: const VisualDensity(
-              vertical: VisualDensity.minimumDensity,
-              horizontal: VisualDensity.minimumDensity,
-            ),
-            icon: const Icon(
-              Icons.settings_rounded,
-            ),
-            onPressed: _onShowSessionInfoDialog,
-          ),
-        ]
-            : [],
         children: [
-          sessionModel.isSessionActive ?
-          Center(
-            child: Consumer<OrdersModel>(
-              builder: (context, ordersModel, child) {
-                int elemCount = ordersModel.ordersData.length;
-
-                return elemCount > 0 ?
-                Column(
-                  children: [
-                    ...ordersModel.ordersData.asMap().map((index, orderData) {
-                      return MapEntry(
-                        index,
-                        Padding(
-                          padding: EdgeInsets.only(
-                            bottom: index < ordersModel.ordersData.length - 1 ? JoloboxTheme.sizes.smallPadding : 0
-                          ),
-                          child: SizedBox(
-                            width: 500,
-                            child: OrderTile(
-                              orderData: orderData,
-                            )
-                          ),
-                        ),
-                      );
-                    }).values.toList(),
-                  ],
-                )
-                : SizedBox(
-                  width: 500,
-                  child: ContentSurface(
-                    child: Center(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: JoloboxTheme.sizes.bigPadding),
-                        child: Text(
-                          'Нет существующих заказов',
-                          style: TextStyle(
-                            fontSize: JoloboxTheme.sizes.bigTextSize,
-                            color: JoloboxTheme.colors.inactiveButtonText,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                );
-              },
-            )
-          )
-          : Expanded(
+          Expanded(
             child: Column(
               children: [
                 const Spacer(flex: 1),
@@ -217,6 +151,84 @@ class _OrdersPageState extends State<OrdersPage> {
           ),
         ],
       )
+      :
+      Consumer<OrdersModel>(
+        builder: (context, ordersModel, child) {
+          int elemCount = ordersModel.ordersData.length;
+
+          return PageLayoutSliverList(
+            title: 'Заказы',
+            actionButtons: [
+              IconButton(
+                color: JoloboxTheme.colors.primary,
+                highlightColor: JoloboxTheme.colors.primary.withAlpha(0x30),
+                splashColor: JoloboxTheme.colors.primary.withAlpha(0x30),
+                splashRadius: JoloboxTheme.sizes.themeScale(32.0),
+                iconSize: 32.0,
+                visualDensity: const VisualDensity(
+                  vertical: VisualDensity.minimumDensity,
+                  horizontal: VisualDensity.minimumDensity,
+                ),
+                icon: const Icon(
+                  Icons.settings_rounded,
+                ),
+                onPressed: _onShowSessionInfoDialog,
+              ),
+            ],
+            delegate: elemCount > 0 ?
+            SliverChildBuilderDelegate(
+              (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    top: index == 0 ? JoloboxTheme.sizes.smallPadding : 0,
+                    bottom: JoloboxTheme.sizes.smallPadding,
+                    left: JoloboxTheme.sizes.smallPadding,
+                    right: JoloboxTheme.sizes.smallPadding,
+                  ),
+                  child: Center(
+                    child: SizedBox(
+                      width: 500,
+                      child: OrderTile(
+                        orderData: ordersModel.ordersData[index],
+                      ),
+                    ),
+                  ),
+                );
+              },
+              childCount: ordersModel.ordersData.length
+            )
+            :
+            SliverChildBuilderDelegate(
+              (context, index) {
+                return Padding(
+                  padding: EdgeInsets.all(JoloboxTheme.sizes.smallPadding),
+                  child: Center(
+                    child: SizedBox(
+                      width: 500,
+                      child: ContentSurface(
+                        child: Center(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: JoloboxTheme.sizes.bigPadding),
+                            child: Text(
+                              'Нет существующих заказов',
+                              style: TextStyle(
+                                fontSize: JoloboxTheme.sizes.bigTextSize,
+                                color: JoloboxTheme.colors.inactiveButtonText,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              childCount: 1
+            )
+          );
+        }
+      ),
     );
   }
 }

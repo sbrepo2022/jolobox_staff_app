@@ -8,7 +8,7 @@ import 'package:jolobox_staff_app/components/common/avatar_widget.dart';
 class AppBarMain extends AppBar {
   AppBarMain({Key? key}):super(
     key: key,
-    backgroundColor: const Color(0xB2F9F9F9),
+    backgroundColor: JoloboxTheme.colors.background,
     toolbarHeight: JoloboxTheme.sizes.themeScale(80.0),
     title: Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -41,6 +41,7 @@ class AppBarMain extends AppBar {
             child: SvgPicture.asset('resources/images/logos/J_logo.svg'),
           ),
         ),
+        const SizedBox(width: 10.0)
       ],
     ),
   );
